@@ -3,21 +3,20 @@ const db = require('../models');
 const config = require('../config/config');
 
 const initDatabase = async function () {
-  const connection = mysql
-    .createConnection({
-      host: config.db.host,
-      port: config.db.port,
-      user: config.db.user,
-      password: config.db.password,
-    })
-    .then((conn) => {
-      conn.query(`CREATE DATABASE IF NOT EXISTS \`${config.db.database}\`;`);
-      conn.end();
-    });
+  const connection = await mysql.createConnection({
+    host: config.db.host,
+    port: config.db.port,
+    user: config.db.user,
+    password: config.db.password,
+  });
 
-  const syncTable = db.sequelize.sync({ force: true });
+  await connection.query(
+    `CREATE DATABASE IF NOT EXISTS \`${config.db.database}\`;`
+  );
 
-  await Promise.all([connection, syncTable]);
+  await connection.end();
+
+  await db.sequelize.sync({ force: true, logging: false });
 };
 
 module.exports = initDatabase;

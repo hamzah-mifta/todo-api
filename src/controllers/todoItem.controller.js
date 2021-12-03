@@ -1,23 +1,22 @@
 const { TodoItem } = require('../models');
-const { recordNotFound } = require('../utils/response');
+const { recordNotFound, responseSuccess } = require('../utils/response');
 
 exports.create = async (req, res) => {
   try {
     // insert ke database
     const todoItem = await TodoItem.create(req.body);
 
-    // response structure
-    const response = {
-      is_active: todoItem.is_active,
-      priority: todoItem.priority,
-      created_at: todoItem.created_at,
-      updated_at: todoItem.updated_at,
-      id: todoItem.id,
-      activity_group_id: todoItem.activity_group_id,
-      title: todoItem.title,
-    };
-
-    return res.status(201).json(response);
+    return res.status(201).json(
+      responseSuccess({
+        created_at: todoItem.created_at,
+        updated_at: todoItem.updated_at,
+        id: todoItem.id,
+        title: todoItem.title,
+        activity_group_id: todoItem.activity_group_id,
+        is_active: todoItem.is_active,
+        priority: todoItem.priority,
+      })
+    );
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -32,23 +31,9 @@ exports.findAll = async (req, res) => {
       whereStatement.activity_group_id = req.query.activity_group_id;
 
     // search todo items in database
-    const todoItems = await TodoItem.findAll({
-      attributes: ['id', 'title', 'activity_group_id', 'is_active', 'priority'],
-      where: whereStatement,
-      offset: 0,
-      limit: 10,
-      order: [['created_at', 'DESC']],
-    });
+    const todoItems = await TodoItem.findAll({ where: whereStatement });
 
-    // response structure
-    const response = {
-      total: todoItems.length,
-      limit: 10,
-      skip: 0,
-      data: todoItems,
-    };
-
-    return res.json(response);
+    return res.json(responseSuccess(todoItems));
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -57,14 +42,17 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   try {
     // search todo item from database by id
-    const todoItem = await TodoItem.findByPk(req.params.id, {
-      attributes: ['id', 'title', 'is_active', 'priority'],
-    });
+    const todoItem = await TodoItem.findByPk(req.params.id);
 
     // return 404 if todo item not found
-    if (!todoItem) return res.status(404).json(recordNotFound(req.params.id));
+    if (!todoItem)
+      return res.status(404).json({
+        status: 'Not Found',
+        message: `Todo with ID ${req.params.id} Not Found`,
+        data: {},
+      });
 
-    return res.json(todoItem);
+    return res.json(responseSuccess(todoItem));
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -84,7 +72,7 @@ exports.update = async (req, res) => {
     // save updated todo item
     await todoItem.save();
 
-    return res.json(todoItem);
+    return res.json(responseSuccess(todoItem));
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -92,26 +80,21 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    // if multiple delete, use request query id and ignore params id
-    if (req.query.id) {
-      const ids = req.query.id.split(',').map((id) => +id);
+    // if no query given
+    const todoItem = await TodoItem.findByPk(req.params.id);
 
-      // delete
-      await TodoItem.destroy({ where: { id: ids } });
+    // return 404 if todo item not found
+    if (!todoItem)
+      return res.status(404).json({
+        status: 'Not Found',
+        message: `Todo with ID ${req.params.id} Not Found`,
+        data: {},
+      });
 
-      return res.json({});
-    } else {
-      // if no query given
-      const todoItem = await TodoItem.findByPk(req.params.id);
+    // delete todo from database
+    await todoItem.destroy();
 
-      // return 404 if todo item not found
-      if (!todoItem) return res.status(404).json(recordNotFound(req.params.id));
-
-      // delete todo from database
-      await todoItem.destroy();
-
-      return res.json({});
-    }
+    return res.json(responseSuccess({}));
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);

@@ -18,18 +18,18 @@ module.exports = (sequelize, DataTypes) => {
   }
   ActivityGroup.init(
     {
-      title: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: true,
-        },
-      },
       email: {
         type: DataTypes.STRING,
         allowNull: true,
         validate: {
           isEmail: true,
+        },
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: true,
         },
       },
     },

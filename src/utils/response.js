@@ -1,9 +1,15 @@
-exports.recordNotFound = (id) => {
+exports.activityNotFound = (id) => {
   return {
-    name: 'NotFound',
-    message: `No record found for id '${id}'`,
-    code: 404,
-    className: 'not-found',
-    errors: {},
+    status: 'Not Found',
+    message: `Activity with ID ${id} Not Found`,
+    data: {},
+  };
+};
+
+exports.responseSuccess = (data) => {
+  return {
+    status: 'Success',
+    message: 'Success',
+    data: data,
   };
 };

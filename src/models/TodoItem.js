@@ -18,6 +18,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   TodoItem.init(
     {
+      activity_group_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: true,
+        },
+      },
       title: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -34,13 +41,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: 'very-high',
-      },
-      activity_group_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-          notNull: true,
-        },
       },
     },
     {
