@@ -40,29 +40,22 @@ const todoItemDummy = [
 
 const setupDatabase = async () => {
   // clear avtivity group table
-  const clearActivity = ActivityGroup.destroy({
+  await ActivityGroup.destroy({
     where: {},
-    truncate: { cascade: true },
+    force: true,
   });
 
   // clear todo item data
-  const clearTodoItem = TodoItem.destroy({
+  await TodoItem.destroy({
     where: {},
-    truncate: true,
+    force: true,
   });
 
   // insert activity group dummy data
-  const createActivity = ActivityGroup.bulkCreate(activityGroupDummy);
+  await ActivityGroup.bulkCreate(activityGroupDummy);
 
   // insert todo item dummy data
-  const createTodoItem = TodoItem.bulkCreate(todoItemDummy);
-
-  await Promise.all([
-    clearTodoItem,
-    clearActivity,
-    createActivity,
-    createTodoItem,
-  ]);
+  await TodoItem.bulkCreate(todoItemDummy);
 };
 
 module.exports = { setupDatabase };

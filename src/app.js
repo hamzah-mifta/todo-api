@@ -14,10 +14,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// sync database
-const initDatabase = require('./utils/database');
-initDatabase();
-
 // routes
 app.get('/', (req, res) => res.send({ message: 'OK' }));
 app.use('/activity-groups', activityGroupRoute);

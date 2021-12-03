@@ -17,16 +17,33 @@ test('Should create new todo item', async () => {
     .expect(201);
 
   // check activity in database
-  const todoItems = await TodoItem.findByPk(response.body.id);
+  const todoItems = await TodoItem.findByPk(response.body.data.id);
   expect(todoItems).not.toBeNull();
 });
 
-test('Should not create new todo item with invalid title or activity group id', async () => {
+test('Should not create new todo item with blank activity_group_id', async () => {
   await request(app)
     .post('/todo-items')
     .send({
       title: 'New Todo',
-      activity_group_id: 99,
+    })
+    .expect(400);
+});
+
+test('Should not create new todo item with blank title', async () => {
+  await request(app)
+    .post('/todo-items')
+    .send({
+      activity_group_id: 1,
+    })
+    .expect(400);
+});
+
+test('Should not create new todo item with non exist activity group', async () => {
+  await request(app)
+    .post('/todo-items')
+    .send({
+      activity_group_id: 123,
     })
     .expect(400);
 });
@@ -38,7 +55,7 @@ test('Should get all todo items', async () => {
   expect(response.body.data.length).toBe(3);
 });
 
-test('Should fetch all todo items by group id', async () => {
+test('Should fetch all todo items by activity group id', async () => {
   const response = await request(app)
     .get('/todo-items?activity_group_id=1')
     .expect(200);
@@ -49,12 +66,12 @@ test('Should fetch all todo items by group id', async () => {
 test('Should fetch todo item by id', async () => {
   const response = await request(app).get('/todo-items/1');
 
-  const todoItem = await TodoItem.findByPk(response.body.id);
+  const todoItem = await TodoItem.findByPk(response.body.data.id);
   expect(todoItem).not.toBeNull();
 });
 
 test('Should not fetch non exist todo item', async () => {
-  await request(app).get('/todo-items/999999').expect(404);
+  await request(app).get('/todo-items/123').expect(404);
 });
 
 // UPDATE
@@ -69,22 +86,22 @@ test('Should update todo item', async () => {
     .expect(200);
 
   // check if data updated according to request body
-  const todoItem = await TodoItem.findByPk(response.body.id);
+  const todoItem = await TodoItem.findByPk(response.body.data.id);
 
-  expect(todoItem.title).toBe(response.body.title);
-  expect(todoItem.is_active).toBe(response.body.is_active);
-  expect(todoItem.priority).toBe(response.body.priority);
+  expect(todoItem.title).toBe(response.body.data.title);
+  expect(todoItem.is_active).toBe(response.body.data.is_active);
+  expect(todoItem.priority).toBe(response.body.data.priority);
 });
 
 test('Should not update non exist todo item', async () => {
   await request(app)
-    .patch('/todo-items/999999')
+    .patch('/todo-items/123')
     .send({
       title: 'To do 2.1 (EDIT)',
       is_active: false,
       priority: 'normal',
     })
-    .expect(404);
+    .expect(400);
 });
 
 // DELETE
@@ -95,9 +112,6 @@ test('Should delete todo item group by id', async () => {
   expect(todoItem.length).toBe(0);
 });
 
-test('Should delete multiple todo item by query', async () => {
-  await request(app).delete('/todo-items/1?id=2,3').send().expect(200);
-
-  const todoItem = await TodoItem.findAll();
-  expect(todoItem.length).toBe(1);
+test('Should not delete not exist todo item', async () => {
+  await request(app).delete('/todo-item/3').send().expect(404);
 });

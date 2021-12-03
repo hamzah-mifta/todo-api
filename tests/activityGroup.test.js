@@ -3,7 +3,6 @@ const app = require('../src/app');
 const { ActivityGroup } = require('../src/models');
 const { setupDatabase } = require('./fixtures/db');
 
-// maintain db for testing
 beforeEach(setupDatabase);
 
 // CREATE
@@ -17,15 +16,15 @@ test('Should create new activity group', async () => {
     .expect(201);
 
   // check activity in database
-  const activity = await ActivityGroup.findByPk(response.body.id);
+  const activity = await ActivityGroup.findByPk(response.body.data.id);
   expect(activity).not.toBeNull();
 });
 
-test('Should not create activity group with invalid title or email', async () => {
+test('Should not create activity group with blank title', async () => {
   await request(app)
     .post('/activity-groups')
     .send({
-      email: 'wrong_email_format',
+      title: '',
     })
     .expect(400);
 });
@@ -37,22 +36,18 @@ test('Should get all activity groups', async () => {
   expect(response.body.data.length).toBe(3);
 });
 
-test('Should get all activity groups for email', async () => {
-  const response = await request(app)
-    .get(`/activity-groups?email=${encodeURIComponent('hamzah+1@mail.id')}`)
-    .expect(200);
-
-  expect(response.body.data.length).toBe(1);
-});
-
 test('Should fetch activity group by id', async () => {
   const response = await request(app).get(`/activity-groups/1`);
 
-  const activity = await ActivityGroup.findByPk(response.body.id);
+  const activity = await ActivityGroup.findByPk(response.body.data.id);
   expect(activity).not.toBeNull();
 });
 
-// UPDATE
+test('Should not fetch non exist activity group', async () => {
+  await request(app).get('/activity-groups/123').expect(404);
+});
+
+// // UPDATE
 test('Should update activity group', async () => {
   const response = await request(app)
     .patch('/activity-groups/2')
@@ -63,15 +58,19 @@ test('Should update activity group', async () => {
     .expect(200);
 
   // check if data updated according to request body
-  const activity = await ActivityGroup.findByPk(response.body.id);
+  const activity = await ActivityGroup.findByPk(response.body.data.id);
 
-  expect(activity.title).toBe(response.body.title);
-  expect(activity.email).toBe(response.body.email);
+  expect(activity.title).toBe(response.body.data.title);
+  expect(activity.email).toBe(response.body.data.email);
+});
+
+test('Should not update activity group with blank body', async () => {
+  await request(app).patch('/activity-groups/1').send({}).expect(400);
 });
 
 test('Should not update non exist activity group', async () => {
   await request(app)
-    .patch('/activity-groups/99999999')
+    .patch('/activity-groups/123')
     .send({
       title: 'Activity (EDIT)',
       email: 'edit@email.com',
@@ -79,17 +78,7 @@ test('Should not update non exist activity group', async () => {
     .expect(404);
 });
 
-test('Should not update activity group with invalid email', async () => {
-  await request(app)
-    .patch('/activity-groups/1')
-    .send({
-      title: 'Activity (EDIT)',
-      email: 'wrong_email_format',
-    })
-    .expect(400);
-});
-
-// DELETE
+// // DELETE
 test('Should delete activity group by id', async () => {
   await request(app).delete('/activity-groups/3').send().expect(200);
 
@@ -98,5 +87,5 @@ test('Should delete activity group by id', async () => {
 });
 
 test('Should not delete non exist activity group', async () => {
-  await request(app).delete('/activity-groups/99999999').send().expect(404);
+  await request(app).delete('/activity-groups/123').send().expect(404);
 });
