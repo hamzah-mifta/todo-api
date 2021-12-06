@@ -16,7 +16,7 @@ test('Should create new todo item', async () => {
     })
     .expect(201);
 
-  // check activity in database
+  // check todo in database
   const todoItems = await TodoItem.findByPk(response.body.data.id);
   expect(todoItems).not.toBeNull();
 });
@@ -44,8 +44,9 @@ test('Should not create new todo item with non exist activity group', async () =
     .post('/todo-items')
     .send({
       activity_group_id: 123,
+      title: 'New Todo',
     })
-    .expect(400);
+    .expect(404);
 });
 
 // READ
@@ -101,7 +102,7 @@ test('Should not update non exist todo item', async () => {
       is_active: false,
       priority: 'normal',
     })
-    .expect(400);
+    .expect(404);
 });
 
 // DELETE

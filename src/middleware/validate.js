@@ -1,3 +1,5 @@
+'use strict';
+
 const { ActivityGroup } = require('../models');
 
 exports.validateActivity = (req, res, next) => {
@@ -32,15 +34,16 @@ exports.validateTodo = async (req, res, next) => {
     });
   }
 
+  // check if activity group id exist on database
   const activity = await ActivityGroup.findByPk(req.body.activity_group_id);
 
-  if (!activity) {
+  // return 404 if not exist
+  if (!activity)
     return res.status(404).json({
       status: 'Not Found',
       message: `Activity with activity_group_id ${req.body.activity_group_id} Not Found`,
       data: {},
     });
-  }
 
   next();
 };

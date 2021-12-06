@@ -1,3 +1,11 @@
+exports.responseSuccess = (data) => {
+  return {
+    status: 'Success',
+    message: 'Success',
+    data: data,
+  };
+};
+
 exports.activityNotFound = (id) => {
   return {
     status: 'Not Found',
@@ -6,10 +14,10 @@ exports.activityNotFound = (id) => {
   };
 };
 
-exports.responseSuccess = (data) => {
+exports.todoNotFound = (id) => {
   return {
-    status: 'Success',
-    message: 'Success',
-    data: data,
+    status: 'Not Found',
+    message: `Todo with ID ${id} Not Found`,
+    data: {},
   };
 };

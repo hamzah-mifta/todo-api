@@ -16,7 +16,7 @@ const initDatabase = async function () {
 
   await connection.end();
 
-  await db.sequelize.sync({ force: true, logging: false });
+  await db.sequelize.sync();
 };
 
 module.exports = initDatabase;

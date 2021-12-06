@@ -1,22 +1,14 @@
+'use strict';
+
 const { TodoItem } = require('../models');
-const { recordNotFound, responseSuccess } = require('../utils/response');
+const { responseSuccess, todoNotFound } = require('../utils/response');
 
 exports.create = async (req, res) => {
   try {
     // insert ke database
     const todoItem = await TodoItem.create(req.body);
 
-    return res.status(201).json(
-      responseSuccess({
-        created_at: todoItem.created_at,
-        updated_at: todoItem.updated_at,
-        id: todoItem.id,
-        title: todoItem.title,
-        activity_group_id: todoItem.activity_group_id,
-        is_active: todoItem.is_active,
-        priority: todoItem.priority,
-      })
-    );
+    return res.status(201).json(responseSuccess(todoItem));
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -45,12 +37,7 @@ exports.findOne = async (req, res) => {
     const todoItem = await TodoItem.findByPk(req.params.id);
 
     // return 404 if todo item not found
-    if (!todoItem)
-      return res.status(404).json({
-        status: 'Not Found',
-        message: `Todo with ID ${req.params.id} Not Found`,
-        data: {},
-      });
+    if (!todoItem) return res.status(404).json(todoNotFound(req.params.id));
 
     return res.json(responseSuccess(todoItem));
   } catch (error) {
@@ -64,7 +51,7 @@ exports.update = async (req, res) => {
     const todoItem = await TodoItem.findByPk(req.params.id);
 
     // return 404 if todo item not found
-    if (!todoItem) return res.status(404).json(recordNotFound(req.params.id));
+    if (!todoItem) return res.status(404).json(todoNotFound(req.params.id));
 
     // update todo item data based on request body
     Object.keys(req.body).forEach((key) => (todoItem[key] = req.body[key]));
@@ -84,19 +71,13 @@ exports.delete = async (req, res) => {
     const todoItem = await TodoItem.findByPk(req.params.id);
 
     // return 404 if todo item not found
-    if (!todoItem)
-      return res.status(404).json({
-        status: 'Not Found',
-        message: `Todo with ID ${req.params.id} Not Found`,
-        data: {},
-      });
+    if (!todoItem) return res.status(404).json(todoNotFound(req.params.id));
 
     // delete todo from database
     await todoItem.destroy();
 
     return res.json(responseSuccess({}));
   } catch (error) {
-    console.log(error);
     return res.status(500).json(error);
   }
 };
