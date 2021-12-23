@@ -4,21 +4,10 @@ const { activityNotFound, responseSuccess } = require('../utils/response');
 
 exports.create = async (req, res) => {
   try {
-    const { title, email } = req.body;
-
     // insert ke database
-    const activity = await ActivityGroup.create({ title, email });
+    const activity = await ActivityGroup.create(req.body);
 
-    // response structure, should encrypt email
-    const response = {
-      created_at: activity.created_at,
-      updated_at: activity.updated_at,
-      id: activity.id,
-      title: activity.title,
-      email: activity.email,
-    };
-
-    return res.status(201).json(responseSuccess(response));
+    return res.status(201).json(responseSuccess(activity));
   } catch (error) {
     return res.status(400).json(error);
   }
