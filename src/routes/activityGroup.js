@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const activityGroupController = require('../controllers/activityGroup.controller');
-const { validateActivity } = require('../middleware/validate');
+const { validateActivity } = require('../validation/validate');
 
 router.get('/', activityGroupController.findAll);
 router.get('/:id', activityGroupController.findOne);

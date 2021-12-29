@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const todoItemController = require('../controllers/todoItem.controller');
-const { validateTodo } = require('../middleware/validate');
+const { validateTodo } = require('../validation/validate');
 
 router.get('/', todoItemController.findAll);
 router.get('/:id', todoItemController.findOne);
