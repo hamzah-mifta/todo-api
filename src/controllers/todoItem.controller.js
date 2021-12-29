@@ -62,7 +62,7 @@ exports.delete = async (req, res) => {
 
     if (!todo) return res.RESPONSE.notFound('Todo Item', req.params.id);
 
-    await todo.destroy;
+    await todo.destroy();
 
     return res.RESPONSE.success();
   } catch (error) {
