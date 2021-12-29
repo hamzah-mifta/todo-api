@@ -109,7 +109,7 @@ test('Should not update non exist todo item', async () => {
 test('Should delete todo item group by id', async () => {
   await request(app).delete('/todo-items/3').send().expect(200);
 
-  const todoItem = await TodoItem.findAll({ where: { id: 3 } });
+  const todoItem = await TodoItem.findOne({ where: { id: 3 } });
   expect(todoItem.length).toBe(0);
 });
 

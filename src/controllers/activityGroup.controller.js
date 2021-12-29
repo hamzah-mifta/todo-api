@@ -1,75 +1,65 @@
-'use strict';
-const { ActivityGroup } = require('../models');
-const { activityNotFound, responseSuccess } = require('../utils/response');
+const { activityGroupService } = require('../services');
 
 exports.create = async (req, res) => {
   try {
-    // insert ke database
-    const activity = await ActivityGroup.create(req.body);
+    const result = await activityGroupService.create(req.body);
 
-    return res.status(201).json(responseSuccess(activity));
+    return res.RESPONSE.success(result, 201);
   } catch (error) {
-    return res.status(400).json(error);
+    return res.RESPONSE.error(400);
   }
 };
 
 exports.findAll = async (req, res) => {
   try {
     // search activity groups in database
-    const activities = await ActivityGroup.findAll({});
+    const result = await activityGroupService.findAll();
 
-    return res.json(responseSuccess(activities));
+    return res.RESPONSE.success(result);
   } catch (error) {
-    return res.status(500).json(error);
+    return res.RESPONSE.error(500);
   }
 };
 
 exports.findOne = async (req, res) => {
   try {
     // search activity group from database by id
-    const activity = await ActivityGroup.findByPk(req.params.id);
+    const result = await activityGroupService.findById(req.params.id);
 
-    // return 404 if activity group not found
-    if (!activity) return res.status(404).json(activityNotFound(req.params.id));
+    if (!result) return res.RESPONSE.notFound('Activity', req.params.id);
 
-    return res.json(responseSuccess(activity));
+    return res.RESPONSE.success(result);
   } catch (error) {
-    return res.status(500).json(error);
+    return res.RESPONSE.error(500);
   }
 };
 
 exports.update = async (req, res) => {
   try {
-    // cari activity group yang akan diupdate
-    const activity = await ActivityGroup.findByPk(req.params.id);
+    const activity = await activityGroupService.findById(req.params.id);
 
-    // return 404 if activity group not found
-    if (!activity) return res.status(404).json(activityNotFound(req.params.id));
+    if (!activity) return res.RESPONSE.notFound('Activity', req.params.id);
 
-    // update activity data based on request body
-    Object.keys(req.body).forEach((key) => (activity[key] = req.body[key]));
+    const result = await activity.update(req.body);
 
-    // save updated activity group
-    await activity.save();
-
-    return res.json(responseSuccess(activity));
+    return res.RESPONSE.success(result);
   } catch (error) {
-    return res.status(400).json(error);
+    return res.RESPONSE.error(400, 'Bad Request');
   }
 };
 
 exports.delete = async (req, res) => {
   try {
     // find activity group to delete
-    const activity = await ActivityGroup.findByPk(req.params.id);
+    const activity = await activityGroupService.findById(req.params.id);
 
     // return 404 if activity not found
-    if (!activity) return res.status(404).json(activityNotFound(req.params.id));
+    if (!activity) return res.RESPONSE.notFound('Activity', req.params.id);
 
     // delete from database based params id
     await activity.destroy();
 
-    return res.json(responseSuccess({}));
+    return res.RESPONSE.success();
   } catch (error) {
     return res.status(400).json(error);
   }

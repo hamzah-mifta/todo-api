@@ -1,45 +1,42 @@
-'use strict';
-
-const { TodoItem } = require('../models');
-const { responseSuccess, todoNotFound } = require('../utils/response');
+/* eslint-disable camelcase */
+const { todoItemService } = require('../services');
 
 exports.create = async (req, res) => {
   try {
     // insert ke database
-    const todoItem = await TodoItem.create(req.body);
+    const result = await todoItemService.create(req.body);
 
-    return res.status(201).json(responseSuccess(todoItem));
+    return res.RESPONSE.success(result, 201);
   } catch (error) {
-    return res.status(400).json(error);
+    return res.RESPONSE.error(400, 'Bad Request', error);
   }
 };
 
 exports.findAll = async (req, res) => {
   try {
-    const whereStatement = {}; // variable untuk menampung query params
+    const options = {};
+    const { activity_group_id } = req.query;
 
-    // check jika ada request query activity group id, jika ada tampung ke whereStatement
-    if (req.query.activity_group_id)
-      whereStatement.activity_group_id = req.query.activity_group_id;
+    if (activity_group_id) options.where = { activity_group_id };
 
     // search todo items in database
-    const todoItems = await TodoItem.findAll({ where: whereStatement });
+    const result = await todoItemService.findAll({ ...options });
 
-    return res.json(responseSuccess(todoItems));
+    return res.RESPONSE.success(result);
   } catch (error) {
-    res.status(500).json({ error });
+    return res.RESPONSE.error(500);
   }
 };
 
 exports.findOne = async (req, res) => {
   try {
     // search todo item from database by id
-    const todoItem = await TodoItem.findByPk(req.params.id);
+    const result = await todoItemService.findById(req.params.id);
 
     // return 404 if todo item not found
-    if (!todoItem) return res.status(404).json(todoNotFound(req.params.id));
+    if (!result) return res.RESPONSE.notFound('Todo Item', req.params.id);
 
-    return res.json(responseSuccess(todoItem));
+    return res.RESPONSE.success(result);
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -47,37 +44,28 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    // cari todo item yang akan diupdate
-    const todoItem = await TodoItem.findByPk(req.params.id);
+    const todo = await todoItemService.findById(req.params.id);
 
-    // return 404 if todo item not found
-    if (!todoItem) return res.status(404).json(todoNotFound(req.params.id));
+    if (!todo) return res.RESPONSE.notFound('Todo Item', req.params.id);
 
-    // update todo item data based on request body
-    Object.keys(req.body).forEach((key) => (todoItem[key] = req.body[key]));
+    const result = await todo.update(req.body);
 
-    // save updated todo item
-    await todoItem.save();
-
-    return res.json(responseSuccess(todoItem));
+    return res.RESPONSE.success(result);
   } catch (error) {
-    return res.status(400).json(error);
+    return res.RESPONSE.error(500, 'Internal Server Error', error);
   }
 };
 
 exports.delete = async (req, res) => {
   try {
-    // if no query given
-    const todoItem = await TodoItem.findByPk(req.params.id);
+    const todo = await todoItemService.findById(req.params.id);
 
-    // return 404 if todo item not found
-    if (!todoItem) return res.status(404).json(todoNotFound(req.params.id));
+    if (!todo) return res.RESPONSE.notFound('Todo Item', req.params.id);
 
-    // delete todo from database
-    await todoItem.destroy();
+    await todo.destroy;
 
-    return res.json(responseSuccess({}));
+    return res.RESPONSE.success();
   } catch (error) {
-    return res.status(500).json(error);
+    return res.RESPONSE.error(500, 'Internal Server Error', error);
   }
 };

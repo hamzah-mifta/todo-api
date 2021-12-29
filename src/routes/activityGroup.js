@@ -1,6 +1,6 @@
 const express = require('express');
-const router = express.Router();
 
+const router = express.Router();
 const activityGroupController = require('../controllers/activityGroup.controller');
 const { validateActivity } = require('../validation/validate');
 

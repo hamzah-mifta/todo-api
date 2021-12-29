@@ -1,49 +1,31 @@
-'use strict';
-
-const { ActivityGroup } = require('../models');
+const { activityGroupService } = require('../services');
 
 exports.validateActivity = (req, res, next) => {
-  // if title null
   if (!req.body.title) {
-    return res.status(400).json({
-      status: 'Bad Request',
-      message: 'title cannot be null',
-      data: {},
-    });
+    return res.RESPONSE.error(400, 'Bad Request', 'title cannot be null');
   }
 
-  next();
+  return next();
 };
 
 exports.validateTodo = async (req, res, next) => {
   // if activity_group_id null
   if (!req.body.activity_group_id) {
-    return res.status(400).json({
-      status: 'Bad Request',
-      message: 'activity_group_id cannot be null',
-      data: {},
-    });
+    return res.RESPONSE.error(400, 'Bad Request', 'activity_group_id cannot be null');
   }
 
   // if title null
   if (!req.body.title) {
-    return res.status(400).json({
-      status: 'Bad Request',
-      message: 'title cannot be null',
-      data: {},
-    });
+    return res.RESPONSE.error(400, 'Bad Request', 'title cannot be null');
   }
 
   // check if activity group id exist on database
-  const activity = await ActivityGroup.findByPk(req.body.activity_group_id);
+  const activity = await activityGroupService.findById(req.body.activity_group_id);
 
   // return 404 if not exist
-  if (!activity)
-    return res.status(404).json({
-      status: 'Not Found',
-      message: `Activity with activity_group_id ${req.body.activity_group_id} Not Found`,
-      data: {},
-    });
+  if (!activity) {
+    return res.RESPONSE.notFound('Activity', req.body.activity_group_id, 'activity_group_id');
+  }
 
-  next();
+  return next();
 };
