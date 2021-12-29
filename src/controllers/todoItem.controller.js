@@ -34,7 +34,7 @@ exports.findOne = async (req, res) => {
     const result = await todoItemService.findById(req.params.id);
 
     // return 404 if todo item not found
-    if (!result) return res.RESPONSE.notFound('Todo Item', req.params.id);
+    if (!result) return res.RESPONSE.notFound('Todo', req.params.id);
 
     return res.RESPONSE.success(result);
   } catch (error) {
@@ -46,7 +46,7 @@ exports.update = async (req, res) => {
   try {
     const todo = await todoItemService.findById(req.params.id);
 
-    if (!todo) return res.RESPONSE.notFound('Todo Item', req.params.id);
+    if (!todo) return res.RESPONSE.notFound('Todo', req.params.id);
 
     const result = await todo.update(req.body);
 
@@ -60,7 +60,7 @@ exports.delete = async (req, res) => {
   try {
     const todo = await todoItemService.findById(req.params.id);
 
-    if (!todo) return res.RESPONSE.notFound('Todo Item', req.params.id);
+    if (!todo) return res.RESPONSE.notFound('Todo', req.params.id);
 
     await todo.destroy();
 
