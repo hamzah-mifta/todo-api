@@ -1,25 +1,29 @@
-const { ActivityGroup } = require('../models');
+const { Activities } = require('../models');
 
 async function create(data) {
-  const result = ActivityGroup.create(data);
+  const result = Activities.create(data);
 
   return result;
 }
 
-async function findAll() {
-  const result = await ActivityGroup.findAll();
+async function findAll(options = {}, limit = 10, offset = 0) {
+  const result = await Activities.findAll({
+    ...options,
+    limit,
+    offset,
+  });
 
   return result;
 }
 
 async function findById(id) {
-  const result = await ActivityGroup.findByPk(id);
+  const result = await Activities.findByPk(id);
 
   return result;
 }
 
 async function updateById(id, data) {
-  const result = await ActivityGroup.update(data, {
+  const result = await Activities.update(data, {
     where: {
       id,
     },
@@ -29,7 +33,7 @@ async function updateById(id, data) {
 }
 
 async function deleteById(id) {
-  const result = await ActivityGroup.destroy({
+  const result = await Activities.destroy({
     where: {
       id,
     },

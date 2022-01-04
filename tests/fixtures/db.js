@@ -1,8 +1,6 @@
-const { ActivityGroup, TodoItem } = require('../../src/models');
+const { Activities, Todos } = require('../../src/models');
 
-// make one activity for activiy group test
-
-const activityGroupDummy = [
+const ActivitiesDummy = [
   {
     id: 1,
     title: 'Activity Test 1',
@@ -20,7 +18,7 @@ const activityGroupDummy = [
   },
 ];
 
-const todoItemDummy = [
+const TodosDummy = [
   {
     id: 1,
     title: 'To do test 1.1',
@@ -40,22 +38,22 @@ const todoItemDummy = [
 
 const setupDatabase = async () => {
   // clear avtivity group table
-  await ActivityGroup.destroy({
+  await Activities.destroy({
     where: {},
     force: true,
   });
 
   // clear todo item data
-  await TodoItem.destroy({
+  await Todos.destroy({
     where: {},
     force: true,
   });
 
   // insert activity group dummy data
-  await ActivityGroup.bulkCreate(activityGroupDummy);
+  await Activities.bulkCreate(ActivitiesDummy);
 
   // insert todo item dummy data
-  await TodoItem.bulkCreate(todoItemDummy);
+  await Todos.bulkCreate(TodosDummy);
 };
 
 module.exports = { setupDatabase };

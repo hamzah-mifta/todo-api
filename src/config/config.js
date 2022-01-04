@@ -9,6 +9,7 @@ const config = {
     host: process.env.MYSQL_HOST,
     port: process.env.MYSQL_PORT,
     dialect: 'mysql',
+    logging: false,
   },
 };
 

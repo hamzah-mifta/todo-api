@@ -11,7 +11,7 @@ const sequelize = new Sequelize(
   config.db.database,
   config.db.user,
   config.db.password,
-  config.db
+  config.db,
 );
 
 fs.readdirSync(__dirname)

@@ -1,8 +1,7 @@
-'use strict';
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class ActivityGroup extends Model {
+  class Activities extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -10,13 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // activity group has many todo item
-      this.hasMany(models.TodoItem, {
+      this.hasMany(models.Todos, {
         foreignKey: 'activity_group_id',
         as: 'todo_items',
       });
     }
   }
-  ActivityGroup.init(
+  Activities.init(
     {
       email: {
         type: DataTypes.STRING,
@@ -36,14 +35,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       paranoid: true,
-      modelName: 'ActivityGroup',
+      modelName: 'Activities',
 
       timestamps: true,
       underscored: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
       deletedAt: 'deleted_at',
-    }
+    },
   );
-  return ActivityGroup;
+  return Activities;
 };

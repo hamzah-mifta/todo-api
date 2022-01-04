@@ -2,7 +2,8 @@ const { activityGroupService } = require('../services');
 
 exports.create = async (req, res) => {
   try {
-    const result = await activityGroupService.create(req.body);
+    const data = req.body;
+    const result = await activityGroupService.create(data);
 
     return res.RESPONSE.success(result, 201);
   } catch (error) {

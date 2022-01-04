@@ -1,25 +1,29 @@
-const { TodoItem } = require('../models');
+const { Todos } = require('../models');
 
 async function create(data) {
-  const result = TodoItem.create(data);
+  const result = Todos.create(data);
 
   return result;
 }
 
-async function findAll(options = {}) {
-  const result = await TodoItem.findAll({ ...options });
+async function findAll(options = {}, offset = 0, limit = 10) {
+  const result = await Todos.findAll({
+    ...options,
+    offset,
+    limit,
+  });
 
   return result;
 }
 
 async function findById(id) {
-  const result = await TodoItem.findByPk(id);
+  const result = await Todos.findByPk(id);
 
   return result;
 }
 
 async function updateById(id, data) {
-  const result = await TodoItem.update(data, {
+  const result = await Todos.update(data, {
     where: {
       id,
     },
@@ -29,7 +33,7 @@ async function updateById(id, data) {
 }
 
 async function deleteById(id) {
-  const result = await TodoItem.destroy({
+  const result = await Todos.destroy({
     where: {
       id,
     },

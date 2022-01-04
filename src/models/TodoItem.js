@@ -1,7 +1,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class TodoItem extends Model {
+  class Todos extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,13 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.ActivityGroup, {
+      this.belongsTo(models.Activities, {
         foreignKey: 'activity_group_id',
         allowNull: false,
       });
     }
   }
-  TodoItem.init(
+  Todos.init(
     {
       activity_group_id: {
         type: DataTypes.INTEGER,
@@ -45,14 +45,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       paranoid: true,
-      modelName: 'TodoItem',
+      modelName: 'Todos',
 
       timestamps: true,
       underscored: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
       deletedAt: 'deleted_at',
-    }
+    },
   );
-  return TodoItem;
+  return Todos;
 };

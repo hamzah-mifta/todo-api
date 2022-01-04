@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 const request = require('supertest');
 const app = require('../src/app');
-const { ActivityGroup } = require('../src/models');
+const { Activities } = require('../src/models');
 const { setupDatabase } = require('./fixtures/db');
 
 beforeEach(setupDatabase);
@@ -16,7 +17,7 @@ test('Should create new activity group', async () => {
     .expect(201);
 
   // check activity in database
-  const activity = await ActivityGroup.findByPk(response.body.data.id);
+  const activity = await Activities.findByPk(response.body.data.id);
   expect(activity).not.toBeNull();
 });
 
@@ -37,9 +38,9 @@ test('Should get all activity groups', async () => {
 });
 
 test('Should fetch activity group by id', async () => {
-  const response = await request(app).get(`/activity-groups/1`);
+  const response = await request(app).get('/activity-groups/1');
 
-  const activity = await ActivityGroup.findByPk(response.body.data.id);
+  const activity = await Activities.findByPk(response.body.data.id);
   expect(activity).not.toBeNull();
 });
 
@@ -58,7 +59,7 @@ test('Should update activity group', async () => {
     .expect(200);
 
   // check if data updated according to request body
-  const activity = await ActivityGroup.findByPk(response.body.data.id);
+  const activity = await Activities.findByPk(response.body.data.id);
 
   expect(activity.title).toBe(response.body.data.title);
   expect(activity.email).toBe(response.body.data.email);
@@ -82,7 +83,7 @@ test('Should not update non exist activity group', async () => {
 test('Should delete activity group by id', async () => {
   await request(app).delete('/activity-groups/3').send().expect(200);
 
-  const activity = await ActivityGroup.findAll({ where: { id: 3 } });
+  const activity = await Activities.findAll({ where: { id: 3 } });
   expect(activity.length).toBe(0);
 });
 

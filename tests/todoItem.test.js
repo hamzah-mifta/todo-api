@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 const request = require('supertest');
 const app = require('../src/app');
-const { TodoItem } = require('../src/models');
+const { Todos } = require('../src/models');
 const { setupDatabase } = require('./fixtures/db');
 
 // maintain db for testing
@@ -17,7 +18,7 @@ test('Should create new todo item', async () => {
     .expect(201);
 
   // check todo in database
-  const todoItems = await TodoItem.findByPk(response.body.data.id);
+  const todoItems = await Todos.findByPk(response.body.data.id);
   expect(todoItems).not.toBeNull();
 });
 
@@ -67,7 +68,7 @@ test('Should fetch all todo items by activity group id', async () => {
 test('Should fetch todo item by id', async () => {
   const response = await request(app).get('/todo-items/1');
 
-  const todoItem = await TodoItem.findByPk(response.body.data.id);
+  const todoItem = await Todos.findByPk(response.body.data.id);
   expect(todoItem).not.toBeNull();
 });
 
@@ -87,11 +88,11 @@ test('Should update todo item', async () => {
     .expect(200);
 
   // check if data updated according to request body
-  const todoItem = await TodoItem.findByPk(response.body.data.id);
+  const todo = await Todos.findByPk(response.body.data.id);
 
-  expect(todoItem.title).toBe(response.body.data.title);
-  expect(todoItem.is_active).toBe(response.body.data.is_active);
-  expect(todoItem.priority).toBe(response.body.data.priority);
+  expect(todo.title).toBe(response.body.data.title);
+  expect(todo.is_active).toBe(response.body.data.is_active);
+  expect(todo.priority).toBe(response.body.data.priority);
 });
 
 test('Should not update non exist todo item', async () => {
@@ -109,8 +110,8 @@ test('Should not update non exist todo item', async () => {
 test('Should delete todo item group by id', async () => {
   await request(app).delete('/todo-items/3').send().expect(200);
 
-  const todoItem = await TodoItem.findAll({ where: { id: 3 } });
-  expect(todoItem.length).toBe(0);
+  const todo = await Todos.findAll({ where: { id: 3 } });
+  expect(todo.length).toBe(0);
 });
 
 test('Should not delete not exist todo item', async () => {
